@@ -17,7 +17,7 @@ The application is designed to manage store discount cards, manage goods in a wa
 - the project was written with the expectation of dividing into microservices and further expansion
 
 ## Tech
-Finance application uses next technologies:
+Receipt application uses next technologies:
 - Java 17
 - Spring Boot
 - Hibernate
@@ -26,5 +26,11 @@ Finance application uses next technologies:
 - Apache POI
 - Open API
 - RESTFUL
+
+
+## GUIDE
+
+- run sql "create_db.sql" (1 bd -> 1 schema -> 4 tables)
+- RESTFUL info in folder "spec" *.yaml
 
 
