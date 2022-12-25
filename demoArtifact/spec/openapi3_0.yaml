@@ -22,6 +22,9 @@ tags:
     description: "Информация о наличии товаров"
   - name: "Скидочные карты"
     description: "Информация о скидочных картах"
+  - name: "Чеки"
+    description: "Информация по чекам"
+
 
 paths:
   /api/product/get/{uuidOrBarcode}:
@@ -50,8 +53,9 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/Internal_Server_Error'
+
   /api/product/getAll:
-    post:
+    get:
       tags:
         - "Товары"
       summary: Получить информацию о всех товаров
@@ -68,11 +72,14 @@ paths:
             type: integer
           description: Размер страницы
           required: false
-      requestBody:
-        $ref: "#/components/requestBodies/CreateOperation"
       responses:
-        '201':
-          description: "Операция добавлена к счёту"
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageOfProduct'          
+       
         '400':
           $ref: '#/components/responses/Bad_Request'
         '401':
@@ -86,10 +93,10 @@ paths:
         - "Товары"
       summary: Сохранить информацию о товаре
       requestBody:
-        $ref: "#/components/requestBodies/CreateAccount"
+        $ref: "#/components/requestBodies/CreateProduct"
       responses:
-        '200':
-          description: "Счёт обновлён"
+        '201':
+          description: "Товар сохранен"
         '400':
           $ref: '#/components/responses/Bad_Request'
         '401':
@@ -117,10 +124,14 @@ paths:
           description: Размер страницы
           required: false            
       requestBody:
-        $ref: "#/components/requestBodies/CreateOperation"
+        $ref: "#/components/requestBodies/CreateProduct"
       responses:
         '201':
-          description: "Операция добавлена к счёту"
+          description: "Товары сохранены"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageOfProduct'          
         '400':
           $ref: '#/components/responses/Bad_Request'
         '403':
@@ -128,38 +139,6 @@ paths:
         '500':
           $ref: '#/components/responses/Internal_Server_Error'
     
-    
-  /api/product/saveAllFromExcel:
-    post:
-      tags:
-        - "Товары"
-      summary: Сохранить все товары c Excel
-      parameters:
-        - in: query
-          name: page
-          schema:
-            type: integer
-          description: Номер страницы
-          required: false
-        - in: query
-          name: size
-          schema:
-            type: integer
-          description: Размер страницы
-          required: false            
-      requestBody:
-        $ref: "#/components/requestBodies/CreateOperation"
-      responses:
-        '201':
-          description: "Операция добавлена к счёту"
-        '400':
-          $ref: '#/components/responses/Bad_Request'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/Internal_Server_Error'
-          
-          
   /api/product/update/{uuidOrBarcode}:
     put:
       tags:
@@ -175,10 +154,10 @@ paths:
             format: uuidOrBarcod
 
       requestBody:
-        $ref: "#/components/requestBodies/CreateOperation"
+        $ref: "#/components/requestBodies/CreateProduct"
       responses:
         '200':
-          description: "Операция изменена"
+          description: "Информация по товару изменена"
         '400':
           $ref: '#/components/responses/Bad_Request'
         '401':
@@ -206,42 +185,22 @@ paths:
             type: integer
           description: Размер страницы
           required: false   
+      requestBody:
+        $ref: "#/components/requestBodies/CreateProduct"
       responses:
         '200':
-          description: "Операция удалена"
+          description: "Информация по товарам сохранена"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageOfProduct'          
         '400':
           $ref: '#/components/responses/Bad_Request'
         '403':
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/Internal_Server_Error'
-  /api/product/update/saveUpdateAllFromExcel:  
-    put:
-      tags:
-        - "Товары"
-      summary: Обновить имеющиеся и создать новые товары
-      parameters:
-        - in: query
-          name: page
-          schema:
-            type: integer
-          description: Номер страницы
-          required: false
-        - in: query
-          name: size
-          schema:
-            type: integer
-          description: Размер страницы
-          required: false   
-      responses:
-        '200':
-          description: "Операция удалена"
-        '400':
-          $ref: '#/components/responses/Bad_Request'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/Internal_Server_Error'
+  
 
   /api/product/delete/{uuidOrBarcode}:
     delete:
@@ -258,7 +217,7 @@ paths:
             format: uuidOrBarcode
       responses:
         '200':
-          description: "Операция удалена"
+          description: "Товар удален"
         '400':
           $ref: '#/components/responses/Bad_Request'
         '401':
@@ -267,7 +226,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/Internal_Server_Error'
-  /api/product/deleteAll, :
+  /api/product/deleteAll:
     delete:
       tags:
         - "Товары"
@@ -316,7 +275,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Product'
+                $ref: '#/components/schemas/DiscountCard'
         '400':
           $ref: '#/components/responses/Bad_Request'
         '403':
@@ -325,7 +284,7 @@ paths:
           $ref: '#/components/responses/Internal_Server_Error'
           
   /api/discount/getAll:
-    post:
+    get:
       tags:
         - "Скидочные карты"
       summary: Получить информацию о скидочных картах
@@ -342,11 +301,13 @@ paths:
             type: integer
           description: Размер страницы
           required: false
-      requestBody:
-        $ref: "#/components/requestBodies/CreateOperation"
       responses:
-        '201':
-          description: "Операция добавлена к счёту"
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageOfDiscountCard'      
         '400':
           $ref: '#/components/responses/Bad_Request'
         '401':
@@ -360,17 +321,16 @@ paths:
         - "Скидочные карты"
       summary: Сохранить информацию о скидочной карте
       requestBody:
-        $ref: "#/components/requestBodies/CreateAccount"
+        $ref: "#/components/requestBodies/CreateDiscountCard"
       responses:
         '200':
-          description: "Счёт обновлён"
+          description: "Скидочная карта сохранена"
         '400':
           $ref: '#/components/responses/Bad_Request'
         '401':
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/Internal_Server_Error'
-          
           
   /api/discount/saveAll:
     post:
@@ -391,10 +351,14 @@ paths:
           description: Размер страницы
           required: false            
       requestBody:
-        $ref: "#/components/requestBodies/CreateOperation"
+        $ref: "#/components/requestBodies/CreateDiscountCard"
       responses:
         '201':
-          description: "Операция добавлена к счёту"
+          description: "Скидочные карты сохранены"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageOfDiscountCard'          
         '400':
           $ref: '#/components/responses/Bad_Request'
         '403':
@@ -417,10 +381,10 @@ paths:
             format: uuidOrBarcod
 
       requestBody:
-        $ref: "#/components/requestBodies/CreateOperation"
+        $ref: "#/components/requestBodies/CreateDiscountCard"
       responses:
         '200':
-          description: "Операция изменена"
+          description: "Информация по скидочной карте изменена"
         '400':
           $ref: '#/components/responses/Bad_Request'
         '401':
@@ -448,9 +412,15 @@ paths:
             type: integer
           description: Размер страницы
           required: false   
+      requestBody:
+        $ref: "#/components/requestBodies/CreateDiscountCard"      
       responses:
         '200':
-          description: "Операция удалена"
+          description: "Информация по скидочным картам сохранена"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageOfDiscountCard'          
         '400':
           $ref: '#/components/responses/Bad_Request'
         '403':
@@ -458,33 +428,7 @@ paths:
         '500':
           $ref: '#/components/responses/Internal_Server_Error'
 
-  /api/discount/update/saveUpdateAllFromExcel:  
-    put:
-      tags:
-        - "Скидочные карты"
-      summary: Обновить имеющиеся и создать новые скидочные карты
-      parameters:
-        - in: query
-          name: page
-          schema:
-            type: integer
-          description: Номер страницы
-          required: false
-        - in: query
-          name: size
-          schema:
-            type: integer
-          description: Размер страницы
-          required: false   
-      responses:
-        '200':
-          description: "Операция удалена"
-        '400':
-          $ref: '#/components/responses/Bad_Request'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/Internal_Server_Error'
+  
 
   /api/discount/delete/{uuidOrBarcode}:
     delete:
@@ -501,7 +445,7 @@ paths:
             format: uuidOrBarcode
       responses:
         '200':
-          description: "Операция удалена"
+          description: "Скидочная карта удалена"
         '400':
           $ref: '#/components/responses/Bad_Request'
         '401':
@@ -510,7 +454,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '500':
           $ref: '#/components/responses/Internal_Server_Error'
-  /api/discount/deleteAll, :
+          
+  /api/discount/deleteAll :
     delete:
       tags:
         - "Скидочные карты"
@@ -530,7 +475,7 @@ paths:
           required: false  
       responses:
         '200':
-          description: "Операция удалена"
+          description: "Все скидочные карты удалены"
         '400':
           $ref: '#/components/responses/Bad_Request'
         '401':
@@ -540,26 +485,135 @@ paths:
         '500':
           $ref: '#/components/responses/Internal_Server_Error'          
           
+  /api/receipt/get/{uuid}:
+    get:
+      tags:
+        - "Чеки"
+      summary: "Получить информацию по чеку"
+      parameters:
+        - in: path
+          name: uuid
+          description: "Идентификатор чека"
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinalReceipt'
+        '400':
+          $ref: '#/components/responses/Bad_Request'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/Internal_Server_Error'          
           
+  /api/receipt/getForExcel/{uuid}:
+    get:
+      tags:
+        - "Чеки"
+      summary: "Получить информацию по чеку в формате Excel"
+      parameters:
+        - in: path
+          name: uuid
+          description: "Идентификатор чека"
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/Bad_Request'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/Internal_Server_Error'   
+
+  /api/receipt/save:
+    post:
+      tags:
+        - "Чеки"
+      summary: Сохранить информацию чека
+      parameters:
+        - in: query
+          name: idDiscountcard
+          description: Идентификатор скидочной карты
+          required: true
+          schema:
+            type: string
+            format: uuid      
+      requestBody:
+        $ref: "#/components/requestBodies/CreateReceipt"
+      responses:
+        '200':
+          description: "Чек сохранен"
+        '400':
+          $ref: '#/components/responses/Bad_Request'
+        '401':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/Internal_Server_Error'          
           
-          
-          
+  /api/receipt/delete/{uuid}:
+    delete:
+      tags:
+        - "Чеки"
+      summary: Удалить чек
+      parameters:
+        - in: path
+          name: uuid
+          description: "Идентификатор чека"
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: "Чек удален"
+        '400':
+          $ref: '#/components/responses/Bad_Request'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/Internal_Server_Error'
+
 components:
   requestBodies:
-    CreateAccount:
+    CreateProduct:
       description: Тело для создания Товара
       required: true
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Product'
-    CreateOperation:
+    CreateDiscountCard:
       description: Тело для создания Скидочной карты
       required: true
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/DiscountCard'
+    CreateReceipt:
+      description: Тело для создания Чека
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Receipt'
+
+
 
   responses:
     Bad_Request:
@@ -637,6 +691,61 @@ components:
           description: "Процент скидки"
           type: integer
           format: int64
+
+    Receipt:
+      type: object
+      description: Чек
+      allOf:
+        - $ref: '#/components/schemas/t_base_essence'
+      properties:
+         productInfoList: 
+          type: array
+          items:
+            type: object
+            properties:
+              idProduct:
+                type: string
+              quantity:
+                type: integer         
+          example:
+            - idProduct: ea5447a4-273b-4681-a9da-ac2b663d6f4f
+              quantity: 10
+            - idProduct: 184519ef-0b5e-4a35-b809-7cea4572a071
+              quantity: 5  
+              
+    FinalReceipt:
+      type: object
+      description: Чек
+      properties:
+        localDateTime: 
+          type: string
+          description: "Дата создания"
+          example:
+            2022-12-21T20:30:02.42
+        products: 
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              quantity:
+                type: integer         
+              cost:
+                type: integer  
+              subtotal:
+                type: integer  
+              totalWithQuantityDiscount:
+                type: integer                
+        subtotal: 
+          type: integer
+          description: Стоимость чека без скидок
+        total: 
+          type: integer
+          description: Стоимость с учетом всех скидок
+
+
+    
 
 
 
